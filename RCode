@@ -1,1 +1,10 @@
-# here we will put our R Code
+rm(list = ls())
+dogTravel <- read.csv('dogTravel.csv',
+               stringsAsFactors = TRUE)
+allDogDescriptions <- read.csv('allDogDescriptions.csv',
+               stringsAsFactors = TRUE)
+movesByLocation <- read.csv('movesByLocation.csv',
+               stringsAsFactors = TRUE)
+str(dogTravel)
+str(allDogDescriptions)
+str(movesByLocation)

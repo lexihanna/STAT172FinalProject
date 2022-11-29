@@ -8,3 +8,9 @@ movesByLocation <- read.csv('movesByLocation.csv',
 str(dogTravel)
 str(allDogDescriptions)
 str(movesByLocation)
+
+# clean data-----------------
+# visualizations---------------
+# predictive model--------------
+# descriptive model---------------
+# data minning enhancement--------------

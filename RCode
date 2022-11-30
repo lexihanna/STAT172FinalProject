@@ -10,6 +10,9 @@ str(allDogDescriptions)
 str(movesByLocation)
 
 # clean data-----------------
+  ## merge data
+  ## remove columns
+  ## fix selected columns
 # visualizations---------------
 # predictive model--------------
 # descriptive model---------------

@@ -10,7 +10,10 @@ str(allDogDescriptions)
 str(movesByLocation)
 
 # clean data-----------------
-  ## merge data
+
+  ## merge dogTravel and allDogDescriptions datasets
+  dog <- merge(dogTravel,allDogDescriptions,by="id")
+
   ## remove columns
   ## fix selected columns
 # visualizations---------------

@@ -14,7 +14,14 @@ str(movesByLocation)
   ## merge dogTravel and allDogDescriptions datasets
   dog <- merge(dogTravel,allDogDescriptions,by="id")
 
-  ## remove columns
+  ## subset dog to only include necessary columns
+  df = subset(dog, select = c(still_there,breed_primary,breed_secondary,
+                             breed_mixed,color_primary,color_secondary,
+                             color_tertiary,sex,age,size,coat,fixed,
+                             special_needs,shots_current,env_children,
+                             env_dogs, env_cats,found
+                             ))
+                             
   ## fix selected columns
 # visualizations---------------
 # predictive model--------------

@@ -15,14 +15,104 @@ str(movesByLocation)
   dog <- merge(dogTravel,allDogDescriptions,by="id")
 
   ## subset dog to only include necessary columns
-  df = subset(dog, select = c(still_there,breed_primary,breed_secondary,
-                             breed_mixed,color_primary,color_secondary,
-                             color_tertiary,sex,age,size,coat,fixed,
+ df = subset(dog, select = c(still_there,breed_primary,
+                             breed_mixed,color_primary, sex,age,size,coat,fixed,
                              special_needs,shots_current,env_children,
-                             env_dogs, env_cats,found
+                             env_dogs,env_cats,house_trained
                              ))
-                             
-  ## fix selected columns
+
+# look for missing values
+summary(df)
+# missing values are in still_there, color_primary,
+# coat, env_children, env_dogs, and env_cats
+# let's clean these variables
+
+
+# cleaning still_there
+table(df$still_there)
+# changing still_there from a factor to character so we can modify it
+df$still_there <- as.character(df$still_there)
+# changing the missing values to False
+df$still_there[df$still_there ==""] <- "False"
+# check to see if it worked
+table(df$still_there)
+# changing still_there back to a factor
+df$still_there <- as.factor(df$still_there)
+# check to see if it worked
+str(df$still_there)
+
+# cleaning coat
+table(df$coat)
+# changing coat from a factor to character so we can modify it
+df$coat <- as.character(df$coat)
+# changing the missing values to Mixed
+df$coat[df$coat ==""] <- "Mixed"
+# check to see if it worked
+table(df$coat)
+#changing Curly, Hairless, Wire to Curly / Hairless / Wire
+df$coat[df$coat %in% c("Curly", "Hairless", "Wire")] <- "Curly / Hairless / Wire"
+# check to see if it worked
+table(df$coat)
+# sort the variables
+df$coat <- factor(df$coat,
+                  levels = c("Short", "Medium", "Long", "Mixed", "Curly / Hairless / Wire"))
+# check to see if it worked
+table(df$coat)
+str(df$coat)
+
+# cleaning env_children
+table(df$env_children)
+# changing env_children from a factor to character so we can modify it
+df$env_children <- as.character(df$env_children)
+# replacing the missing values with the mode of the column
+df$env_children[df$env_children ==""] <- "True"
+# check to see if it worked
+table(df$env_children)
+# changing still_there back to a factor
+df$env_children <- as.factor(df$env_children)
+# check to see if it worked
+str(df$env_children)
+
+# cleaning env_dogs
+table(df$env_dogs)
+# changing env_dogs from a factor to character so we can modify it
+df$env_dogs <- as.character(df$env_dogs)
+# replacing the missing values with the mode of the column
+df$env_dogs[df$env_dogs ==""] <- "True"
+# check to see if it worked
+table(df$env_dogs)
+# changing still_there back to a factor
+df$env_dogs <- as.factor(df$env_dogs)
+# check to see if it worked
+str(df$env_dogs)
+
+# cleaning env_cats
+table(df$env_cats)
+# changing env_cats from a factor to character so we can modify it
+df$env_cats <- as.character(df$env_cats)
+# replacing the missing values with the mode of the column
+df$env_cats[df$env_cats ==""] <- "True"
+# check to see if it worked
+table(df$env_cats)
+# changing still_there back to a factor
+df$env_cats <- as.factor(df$env_cats)
+# check to see if it worked
+str(df$env_cats)
+
+#let's look at what we've changed
+str(df)
+
+# let's assign dummy variables to breed_primary
+# we want to look at the top 10 breeds and assign the other breeds as "other"
+sort(table(df$breed_primary), decreasing = TRUE)[1:10]
+`%notin%` <- Negate(`%in%`)
+# changing breed_primary from a factor to character so we can modify it
+df$breed_primary <- as.character(df$breed_primary)
+df$breed_primary[df$breed_primary %notin% c("Labrador Retriever", "Chihuahua", "Pit Bull Terrier",
+                                          "German Shepherd Dog", "Mixed Breed", "Hound", "Shepherd",
+                                          "Terrier", "Beagle", "Boxer")] <- "Other"
+table(df$breed_primary)
+
 # visualizations---------------
 # predictive model--------------
 # descriptive model---------------

@@ -111,7 +111,22 @@ df$breed_primary <- as.character(df$breed_primary)
 df$breed_primary[df$breed_primary %notin% c("Labrador Retriever", "Chihuahua", "Pit Bull Terrier",
                                           "German Shepherd Dog", "Mixed Breed", "Hound", "Shepherd",
                                           "Terrier", "Beagle", "Boxer")] <- "Other"
+df$breed_primary <- as.factor(df$breed_primary)
 table(df$breed_primary)
+
+#let's look at color_primary
+summary(df$color_primary)
+# let's assign dummy variables to color_primary
+# we want to look at the breeds in order and combine the smallest categories
+sort(table(df$color_primary), decreasing = TRUE)
+# changing breed_primary from a factor to character so we can modify it
+df$color_primary <- as.character(df$color_primary)
+df$color_primary[df$color_primary %in% c("Merle (Blue)", "Sable", "Merle (Red)", 
+                                         "Harlequin")] <- "Merle / Sable / Harlequin"
+df$color_primary[df$color_primary %in% c("")] <- "Unknown"
+# let's check!
+df$color_primary <- as.factor(df$color_primary)
+table(df$color_primary)
 
 # visualizations---------------
 # predictive model--------------

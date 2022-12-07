@@ -238,13 +238,14 @@ dist
 #### No complete separation for this variable
 
 # data mining enhancement--------------
-# data mining packages
 #install.packages("tidytext")
 #install.packages("topicmodels")
 #install.packages("reshape2")
 library(tidytext) #for (tidy) text mining
 library(topicmodels) #for LDA (topic modeling)
 library(reshape2) #for reshaping data (long to wide or wide to long)
+library(randomForest)
+library(pROC)
 
 #I'm creating a new, tokenized data frame that is called "tokens"
 tokens <- df %>% unnest_tokens(word, description)
@@ -287,3 +288,129 @@ top_terms <- topics %>%
   ungroup() %>%
   arrange(topic, -beta) #order (just for the plot)
 top_terms
+
+top_terms %>%
+  mutate(term = reorder(term, beta)) %>% #reorder term/word for plot
+  ggplot() +
+  geom_col(aes(x=term,y= beta, fill = factor(topic)),show.legend = FALSE) +
+  facet_wrap(~ topic, scales = "free") +
+  coord_flip() #make words easier to read
+
+#per-document-per-topic probabilities
+documents <- tidy(lda, matrix = "gamma")
+documents_w<- documents %>%
+  select(document, topic, gamma) %>%
+  dcast(document ~ topic, value.var = "gamma")
+colnames(documents_w) <- c("id", paste0("Topic", c(1:20)))
+df_lda <- merge(documents_w, df, by="id", all = T)
+str(df_lda)
+
+#some dogs didn't have last descriptions... we can remove them for this analysis
+df_lda <- subset(df_lda, !is.na(Topic1))
+#model probability of adoption based on topic probabilities
+#Y = 1 if dog is still there; 0 otherwise
+#Y ~ bernoulli(p)
+#logit(p) = beta_0 + beta_1*topic1 + beta2*topic2 + ...
+# changing type of still_there to numeric
+df_lda$still_there <- as.numeric(df_lda$still_there)
+# making still_there binary {0,1}
+df_lda$still_there <- df_lda$still_there - 1
+# checking to see if it worked
+summary(df_lda$still_there)
+str(df_lda)
+# creating a variable selection forest to create a bernoulli model with lda
+lda_var_selection <- randomForest(still_there~Topic1 + Topic2 + Topic3 + Topic4 + Topic5 + Topic6 + 
+                                    Topic7 + Topic8 + Topic9 + Topic10 + Topic11 + Topic12 + 
+                                    Topic13 + Topic14 + Topic15 + Topic16 + Topic17 + Topic18 + 
+                                    Topic19 + Topic20 + breed_primary + breed_mixed + 
+                                    color_primary + sex + age + size + coat + fixed + 
+                                    special_needs + shots_current + env_children + env_dogs + 
+                                    env_cats + house_trained, # remember dangers here
+                         data= df_lda, # TRAINING DATA
+                         ntree = 1000, #B = # of classification trees in forest
+                         mtry = 4, # choose m = sqrt(14) = 3.74 approx
+                         importance = TRUE)
+# variable importance plot!
+vi <- as.data.frame(varImpPlot(lda_var_selection, type = 1))
+# this plot is broken, unsure why
+vi$Variable <- rownames(vi)
+ggplot(data = vi) +
+  geom_bar(aes(x = reorder(Variable, MeanDecreaseAccuracy), weight = MeanDecreaseAccuracy),
+           position = "identity") +
+  coord_flip() +
+  labs( x = "Variable Name", y = "Importance")
+# splitting into training and testing splits to be able to compare our models before lda
+RNGkind(sample.kind = "default")
+set.seed(2291352)
+train1.idx <- sample(x = 1:nrow(df_lda), size = .7*nrow(df_lda))
+train1.df <- df_lda[train1.idx, ]
+test1.df <- df_lda[-train1.idx, ]
+
+# building a bernoulli model based off of the variable selection plot
+# ROUND 1: color_primary + breed_primary + coat + Topic19
+m1 <- glm(still_there ~ color_primary + breed_primary + coat + Topic19, 
+          data = train1.df,
+          family = binomial(link = "logit"))
+AIC(m1) # 1637.201
+BIC(m1) # 1815.686
+# ROUND 2: color_primary + breed_primary + coat + Topic19 + Topic7 + house_trained + Topic15
+m2 <- glm(still_there ~ color_primary + breed_primary + coat + Topic19 + Topic7 + 
+            house_trained + Topic15, 
+          data = train1.df,
+          family = binomial(link = "logit"))
+AIC(m2) # 1479.21 better! keep going
+BIC(m2) # 1676.818 better! keep going
+# ROUND 3: color_primary + breed_primary + coat + Topic19 + Topic7 + house_trained + Topic15 +
+# Topic2 + Topic14
+m3 <- glm(still_there ~ color_primary + breed_primary + coat + Topic19 + Topic7 + 
+            house_trained + Topic15 + Topic2 + Topic14, 
+          data = train1.df,
+          family = binomial(link = "logit"))
+AIC(m3) # 1434.348 better! keep going
+BIC(m3) # 1644.705 better! keep going
+# ROUND 4: color_primary + breed_primary + coat + Topic19 + Topic7 + house_trained + Topic15 +
+# Topic2 + Topic14 + Topic18
+m4 <- glm(still_there ~ color_primary + breed_primary + coat + Topic19 + Topic7 + 
+            house_trained + Topic15 + Topic2 + Topic14 + Topic18, 
+          data = train1.df,
+          family = binomial(link = "logit"))
+AIC(m4) # 1432.76 better! keep going
+BIC(m4) # 1649.493 worse, but AIC got better. Let's keep going and see if we can improve further.
+# ROUND 5: color_primary + breed_primary + coat + Topic19 + Topic7 + house_trained + Topic15 +
+# Topic2 + Topic14 + Topic18 + Topic12 + Topic8
+m5 <- glm(still_there ~ color_primary + breed_primary + coat + Topic19 + Topic7 + 
+            house_trained + Topic15 + Topic2 + Topic14 + Topic18 + Topic12 + Topic8, 
+          data = train1.df,
+          family = binomial(link = "logit"))
+AIC(m5) # 1433.113 worse, stop!
+BIC(m5) # 1663.595 worse, stop!
+
+# Final LDA model with Random Forest Variable Selection:
+final_lda_model <- glm(still_there ~ color_primary + breed_primary + coat + Topic19 + Topic7 + 
+                         house_trained + Topic15 + Topic2 + Topic14 + Topic18, 
+                       data = train1.df,
+                       family = binomial(link = "logit"))
+summary(final_lda_model)
+
+# let's fine tune pi*
+pi_hat <- predict(final_lda_model, test1.df, type = "response")
+rocCurve <- roc(response = test1.df$still_there,
+                predictor = pi_hat,
+                levels = c("0", "1"))
+plot(rocCurve, print.thres = TRUE, print.auc = TRUE)
+# PI STAR: 0.051
+# SENSITIVITY: 0.760
+# SPECIFICITY: 0.687
+# AUC: 0.782
+pi_star <- coords(rocCurve, "best", ret = "threshold")$threshold[1]
+test1.df$lda_pred <- as.factor(ifelse(pi_hat > pi_star, "1", "0"))
+pi_star
+
+# Confusion Matrix for our final LDA model with Random Forest Variable Selection
+test1.df$still_there <- as.factor(test1.df$still_there)
+cm <- conf_mat(test1.df, still_there, lda_pred)
+autoplot(cm, type = "heatmap") +
+  scale_fill_gradient(low="#D6EAF8",high = "#2E86C1") +
+  labs( x = "Truth", y = "LDA Model Prediction") + 
+  ggtitle("LDA Model Confusion Matrix") +
+  theme(plot.title = element_text(hjust = 0.5))

@@ -146,6 +146,56 @@ summary(df[cols])
 
 
 # visualizations---------------
+
+#look at our Y variable, still_there
+ggplot(data = df)+
+  geom_bar(aes(x = still_there)) +
+  coord_flip() +
+  labs(x = "Adopted", y = "Proportion") +
+  ggtitle("Which dogs have/haven't been adopted?") +
+  scale_fill_grey("Adopted")
+
+# look at breed_primary and still_there
+ggplot(data = df)+
+  geom_bar(aes(x = breed_primary, fill = still_there), position = "fill") +
+  coord_flip() +
+  labs(x = "Primary breed", y = "Adopted") +
+  ggtitle("Which primary breeds have/haven't been adopted?") +
+  scale_fill_brewer("Adopted",palette ="Paired")
+
+# look at color_primary and still_there
+  ggplot(data = df)+
+    geom_bar(aes(x = color_primary, fill = still_there), position = "fill") +
+    coord_flip() +
+    labs(x = "Primary color", y = "Adopted?") +
+    ggtitle("Which color dogs have/haven't been adopted?") +
+  scale_fill_brewer("Adopted",palette ="Paired")
+
+# look at age and still_there  
+  ggplot(data = df)+
+    geom_bar(aes(x = age, fill = still_there), position = "fill") +
+    coord_flip() +
+    labs(x = "Age", y = "Adopted") +
+    ggtitle("Which age of dogs have/haven't been adopted?") +
+  scale_fill_brewer("ADopted",palette ="Paired")
+
+  
+# look at size and still_there
+  ggplot(data = df)+
+    geom_bar(aes(x = size, fill = still_there), position = "fill") +
+    coord_flip() +
+    labs(x = "Size", y = "Adopted") +
+    ggtitle("Which size of dogs have/haven't been adopted?") +
+  scale_fill_brewer("Adopted",palette ="Paired")  
+  
+# look at house_trained and still_there
+  ggplot(data = df)+
+    geom_bar(aes(x = house_trained, fill = still_there), position = "fill") +
+    coord_flip() +
+    labs(x = "House trained", y = "Adopted") +
+    ggtitle("House trained dogs that have/haven't been adopted?") +
+    scale_fill_brewer("House Trained",palette ="Paired")  
+  
 # predictive model--------------
 # descriptive model---------------
 # data mining enhancement--------------

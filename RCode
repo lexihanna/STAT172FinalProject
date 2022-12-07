@@ -1,5 +1,9 @@
 rm(list = ls())
 # packages needed
+#install.packages("yardstick")
+#install.packages("caret")
+library(caret)
+library(yardstick)
 library(ggplot2) #for graphing
 library(RColorBrewer) #for custom color palettes
 library(dplyr) #for manipulating, aggregating, piping

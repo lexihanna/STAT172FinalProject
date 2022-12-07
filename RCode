@@ -1,32 +1,36 @@
 rm(list = ls())
+library(dplyr)
 dogTravel <- read.csv('dogTravel.csv',
-               stringsAsFactors = TRUE)
+                      stringsAsFactors = TRUE)
 allDogDescriptions <- read.csv('allDogDescriptions.csv',
-               stringsAsFactors = TRUE)
+                               stringsAsFactors = TRUE)
 movesByLocation <- read.csv('movesByLocation.csv',
-               stringsAsFactors = TRUE)
+                            stringsAsFactors = TRUE)
 str(dogTravel)
 str(allDogDescriptions)
 str(movesByLocation)
 
 # clean data-----------------
 
-  ## merge dogTravel and allDogDescriptions datasets
-  dog <- merge(dogTravel,allDogDescriptions,by="id")
+## merge dogTravel and allDogDescriptions datasets
+dog <- merge(dogTravel,allDogDescriptions,by="id")
 
-  ## subset dog to only include necessary columns
- df = subset(dog, select = c(still_there,breed_primary,
-                             breed_mixed,color_primary, sex,age,size,coat,fixed,
-                             special_needs,shots_current,env_children,
-                             env_dogs,env_cats,house_trained
-                             ))
+## subset dog to only include necessary columns
+df = subset(dog, select = c(still_there,breed_primary,
+                            breed_mixed,color_primary, sex,age,size,coat,fixed,
+                            special_needs,shots_current,env_children,
+                            env_dogs,env_cats,house_trained, description.x
+))
 
+# changing the variable name of description.x to be more readable
+df %>% rename(description = description.x)
+# changing the character type to character to make it usable in LDA
+df$description <- as.character(df$description)
 # look for missing values
 summary(df)
 # missing values are in still_there, color_primary,
 # coat, env_children, env_dogs, and env_cats
 # let's clean these variables
-
 
 # cleaning still_there
 table(df$still_there)
@@ -101,7 +105,7 @@ str(df$env_cats)
 
 #let's look at what we've changed
 str(df)
-
+summary(df)
 # let's assign dummy variables to breed_primary
 # we want to look at the top 10 breeds and assign the other breeds as "other"
 sort(table(df$breed_primary), decreasing = TRUE)[1:10]
@@ -109,8 +113,8 @@ sort(table(df$breed_primary), decreasing = TRUE)[1:10]
 # changing breed_primary from a factor to character so we can modify it
 df$breed_primary <- as.character(df$breed_primary)
 df$breed_primary[df$breed_primary %notin% c("Labrador Retriever", "Chihuahua", "Pit Bull Terrier",
-                                          "German Shepherd Dog", "Mixed Breed", "Hound", "Shepherd",
-                                          "Terrier", "Beagle", "Boxer")] <- "Other"
+                                            "German Shepherd Dog", "Mixed Breed", "Hound", "Shepherd",
+                                            "Terrier", "Beagle", "Boxer")] <- "Other"
 df$breed_primary <- as.factor(df$breed_primary)
 table(df$breed_primary)
 
@@ -127,6 +131,10 @@ df$color_primary[df$color_primary %in% c("")] <- "Unknown"
 # let's check!
 df$color_primary <- as.factor(df$color_primary)
 table(df$color_primary)
+
+# let's see our final dataset
+summary(df)
+
 
 # visualizations---------------
 # predictive model--------------

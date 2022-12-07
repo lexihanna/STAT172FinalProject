@@ -164,63 +164,79 @@ table(df$still_there)
 # So, around 95% of the dogs from these data were not adopted (False) and 5%
 # of them were not adopted (True).
 ## Exploratory Variable
-### Categorical Variable (checking for complete separation)
-#### frequency table for the breed_primary variable and still_there
+### Categorical Variables (checking for complete separation)
+
+#### distribution table for the breed_primary variable and still_there
 freq <- prop.table(table(df$still_there, df$breed_primary),2)*100
 freq
 #### No complete separation for this variable 
-#### frequency table for the breed_mixed variable and still_there
+
+#### distribution table for the breed_mixed variable and still_there
 freq <- prop.table(table(df$still_there, df$breed_mixed),2)*100
 freq 
 #### No complete separation for this variable 
-#### frequency table for the color_primary variable and still_there
-freq <- prop.table(table(df$still_there, df$color_primary),2)*100
-freq 
+
+#### distribution table for the color_primary variable and still_there
+dist <- prop.table(table(df$still_there, df$color_primary),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the sex variable and still_there
-freq <- prop.table(table(df$still_there, df$sex),2)*100
-freq 
+
+#### distribution table for the sex variable and still_there
+dist <- prop.table(table(df$still_there, df$sex),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the age variable and still_there
-freq <- prop.table(table(df$still_there, df$age),2)*100
-freq 
+
+#### distribution table for the age variable and still_there
+dist <- prop.table(table(df$still_there, df$age),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the size variable and still_there
-freq <- prop.table(table(df$still_there, df$size),2)*100
-freq 
+
+#### distribution table for the size variable and still_there
+dist <- prop.table(table(df$still_there, df$size),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the coat variable and still_there
-freq <- prop.table(table(df$still_there, df$coat),2)*100
-freq 
+
+
+#### distribution table for the coat variable and still_there
+dist <- prop.table(table(df$still_there, df$coat),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the fixed variable and still_there
-freq <- prop.table(table(df$still_there, df$fixed),2)*100
-freq 
+
+#### distribution table for the fixed variable and still_there
+dist <- prop.table(table(df$still_there, df$fixed),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the special_needs variable and still_there
-freq <- prop.table(table(df$still_there, df$special_needs),2)*100
-freq 
+
+#### distribution table for the special_needs variable and still_there
+dist <- prop.table(table(df$still_there, df$special_needs),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the shots_current variable and still_there
-freq <- prop.table(table(df$shots_current, df$fixed),2)*100
-freq 
+
+#### distribution table for the shots_current variable and still_there
+dist <- prop.table(table(df$shots_current, df$fixed),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the env_children variable and still_there
-freq <- prop.table(table(df$still_there, df$env_children),2)*100
-freq 
+
+#### distribution table for the env_children variable and still_there
+dist <- prop.table(table(df$still_there, df$env_children),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the env_dogs variable and still_there
-freq <- prop.table(table(df$still_there, df$env_dogs),2)*100
-freq 
+
+#### distribution table for the env_dogs variable and still_there
+dist <- prop.table(table(df$still_there, df$env_dogs),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the env_cats variable and still_there
-freq <- prop.table(table(df$still_there, df$env_cats),2)*100
-freq 
+
+#### distribution table for the env_cats variable and still_there
+dist <- prop.table(table(df$still_there, df$env_cats),2)*100
+dist 
 #### No complete separation for this variable 
-#### frequency table for the house_trained variable and still_there
-freq <- prop.table(table(df$still_there, df$house_trained),2)*100
-freq 
-#### No complete separation for this variable 
+
+#### distribution table for the house_trained variable and still_there
+dist <- prop.table(table(df$still_there, df$house_trained),2)*100
+dist 
+#### No complete separation for this variable
+
 # data mining enhancement--------------
 # data mining packages
 #install.packages("tidytext")

@@ -1,5 +1,9 @@
 rm(list = ls())
-library(dplyr)
+# packages needed
+library(ggplot2) #for graphing
+library(RColorBrewer) #for custom color palettes
+library(dplyr) #for manipulating, aggregating, piping
+
 dogTravel <- read.csv('dogTravel.csv',
                       stringsAsFactors = TRUE)
 allDogDescriptions <- read.csv('allDogDescriptions.csv',
@@ -19,7 +23,7 @@ dog <- merge(dogTravel,allDogDescriptions,by="id")
 df = subset(dog, select = c(still_there,breed_primary,
                             breed_mixed,color_primary, sex,age,size,coat,fixed,
                             special_needs,shots_current,env_children,
-                            env_dogs,env_cats,house_trained, description.x
+                            env_dogs,env_cats,house_trained, description.x, id
 ))
 
 # changing the variable name of description.x to be more readable
@@ -27,7 +31,12 @@ df %>% rename(description = description.x)
 # changing the character type to character to make it usable in LDA
 df$description <- as.character(df$description)
 # look for missing values
-summary(df)
+# so that our summary and structure calls do not get muddled by the description
+cols = c("still_there","breed_primary",
+         "breed_mixed","color_primary", "sex","age","size","coat","fixed",
+         "special_needs","shots_current","env_children",
+         "env_dogs","env_cats","house_trained", "id")
+summary(df[cols])
 # missing values are in still_there, color_primary,
 # coat, env_children, env_dogs, and env_cats
 # let's clean these variables
@@ -104,8 +113,8 @@ df$env_cats <- as.factor(df$env_cats)
 str(df$env_cats)
 
 #let's look at what we've changed
-str(df)
-summary(df)
+str(df[cols])
+summary(df[cols])
 # let's assign dummy variables to breed_primary
 # we want to look at the top 10 breeds and assign the other breeds as "other"
 sort(table(df$breed_primary), decreasing = TRUE)[1:10]
@@ -133,10 +142,59 @@ df$color_primary <- as.factor(df$color_primary)
 table(df$color_primary)
 
 # let's see our final dataset
-summary(df)
+summary(df[cols])
 
 
 # visualizations---------------
 # predictive model--------------
 # descriptive model---------------
-# data minning enhancement--------------
+# data mining enhancement--------------
+# data mining packages
+#install.packages("tidytext")
+#install.packages("topicmodels")
+#install.packages("reshape2")
+library(tidytext) #for (tidy) text mining
+library(topicmodels) #for LDA (topic modeling)
+library(reshape2) #for reshaping data (long to wide or wide to long)
+
+#I'm creating a new, tokenized data frame that is called "tokens"
+tokens <- df %>% unnest_tokens(word, description)
+#see first few rows - note reach row is now a single word (token)
+head(tokens)
+
+#load stop_words data frame
+data(stop_words)
+#remove all rows consisting of a stop word
+tokens_clean <- tokens %>% anti_join(stop_words)
+# seeing what it looks like
+head(tokens_clean)
+
+#Previously we counted the overall number of times each word showed up
+#now we need to count the number of times each word shows up
+#in each statement
+#note that id is like a statement ID
+tokens_count <- tokens_clean %>%
+  #include id so it counts within unique id
+  count(id, word, sort = TRUE)%>%
+  ungroup()
+#to do LDA, we need what is called a "Document Term Matrix" or DTM
+dtm <- tokens_count %>%
+  cast_dtm(id, word, n)
+
+#now we can perform LDA! need to specify the number of topics (k)
+#start with k = 20
+lda <- LDA(dtm, k = 20, control = list(seed = 1234))
+#Let's first look at what our topics are!
+#This essentially means looking at the most characteristic
+#words for each topic. A plot is the best way to do this
+#(in my opinion)
+#beta matrix gives the per topic per word probabilities
+#a higher beta means that word is important for that topic
+topics <- tidy(lda, matrix = "beta")
+#get a small data frame of the top 10 words for each topic
+top_terms <- topics %>%
+  group_by(topic) %>% #within each topic do some function
+  top_n(10, beta) %>% #that function is take the top 10 in terms of beta
+  ungroup() %>%
+  arrange(topic, -beta) #order (just for the plot)
+top_terms

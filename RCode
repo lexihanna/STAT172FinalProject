@@ -3,6 +3,7 @@ rm(list = ls())
 #install.packages("yardstick")
 #install.packages("caret")
 library(caret)
+library(randomForest)
 library(yardstick)
 library(ggplot2) #for graphing
 library(RColorBrewer) #for custom color palettes
@@ -176,8 +177,8 @@ table(df$still_there)
 ### Categorical Variables (checking for complete separation)
 
 #### distribution table for the breed_primary variable and still_there
-dist <- prop.table(table(df$still_there, df$breed_primary),2)*100
-dist
+freq <- prop.table(table(df$still_there, df$breed_primary),2)*100
+freq
 #### No complete separation for this variable 
 
 #### distribution table for the breed_mixed variable and still_there
@@ -209,7 +210,8 @@ dist
 #### distribution table for the coat variable and still_there
 dist <- prop.table(table(df$still_there, df$coat),2)*100
 dist 
-#### No complete separation for this variable 
+#### There is complete separation 
+#### Every dog that was categorized as curly/hairless/wire was adopted (FALSE)
 
 #### distribution table for the fixed variable and still_there
 dist <- prop.table(table(df$still_there, df$fixed),2)*100
@@ -245,6 +247,8 @@ dist
 dist <- prop.table(table(df$still_there, df$house_trained),2)*100
 dist 
 #### No complete separation for this variable
+
+
 
 # visualizations---------------
 # predictive model--------------

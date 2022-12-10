@@ -158,8 +158,8 @@ df$sex <- as.character(df$sex)
 # so, we just remove that level 
 df$sex[df$sex %in% c("Male", "Unknown")] <- "Male"
 # let's check!
-df$sex <- as.factor(df$sex)
 table(df$sex)
+df$sex <- as.factor(df$sex)
 
 # let's see our final dataset
 summary(df[cols])

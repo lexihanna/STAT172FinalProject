@@ -87,7 +87,7 @@ df$env_children <- as.character(df$env_children)
 df$env_children[df$env_children ==""] <- "True"
 # check to see if it worked
 table(df$env_children)
-# changing still_there back to a factor
+# changing env_children back to a factor
 df$env_children <- as.factor(df$env_children)
 # check to see if it worked
 str(df$env_children)

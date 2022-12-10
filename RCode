@@ -21,7 +21,6 @@ str(allDogDescriptions)
 str(movesByLocation)
 
 # clean data-----------------
-
 ## merge dogTravel and allDogDescriptions datasets
 dog <- merge(dogTravel,allDogDescriptions,by="id")
 
@@ -34,9 +33,10 @@ df = subset(dog, select = c(still_there,breed_primary,
 
 # changing the variable name of description.x to be more readable
 df %>% rename(description = description.x)
-# changing the character type to character to make it usable in LDA
+# changing description to a character column for LDA
 df$description <- as.character(df$description)
-# look for missing values
+
+## look for missing values
 # so that our summary and structure calls do not get muddled by the description
 cols = c("still_there","breed_primary",
          "breed_mixed","color_primary", "sex","age","size","coat","fixed",

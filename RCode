@@ -100,7 +100,7 @@ df$env_dogs <- as.character(df$env_dogs)
 df$env_dogs[df$env_dogs ==""] <- "True"
 # check to see if it worked
 table(df$env_dogs)
-# changing still_there back to a factor
+# changing env_dogs back to a factor
 df$env_dogs <- as.factor(df$env_dogs)
 # check to see if it worked
 str(df$env_dogs)
@@ -113,7 +113,7 @@ df$env_cats <- as.character(df$env_cats)
 df$env_cats[df$env_cats ==""] <- "True"
 # check to see if it worked
 table(df$env_cats)
-# changing still_there back to a factor
+# changing env_cats back to a factor
 df$env_cats <- as.factor(df$env_cats)
 # check to see if it worked
 str(df$env_cats)

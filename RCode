@@ -15,6 +15,9 @@ allDogDescriptions <- read.csv('allDogDescriptions.csv',
                                stringsAsFactors = TRUE)
 movesByLocation <- read.csv('movesByLocation.csv',
                             stringsAsFactors = TRUE)
+# removes duplicate rows 
+dogTravel <- dogTravel[!duplicated(dogTravel$id), ] 
+allDogDescriptions <- allDogDescriptions[!duplicated(allDogDescriptions$id), ] 
 # check if the data was read in accurately 
 str(dogTravel)
 str(allDogDescriptions)
@@ -173,8 +176,8 @@ table(df$still_there)
 ### Categorical Variables (checking for complete separation)
 
 #### distribution table for the breed_primary variable and still_there
-freq <- prop.table(table(df$still_there, df$breed_primary),2)*100
-freq
+dist <- prop.table(table(df$still_there, df$breed_primary),2)*100
+dist
 #### No complete separation for this variable 
 
 #### distribution table for the breed_mixed variable and still_there

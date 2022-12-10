@@ -8,12 +8,14 @@ library(ggplot2) #for graphing
 library(RColorBrewer) #for custom color palettes
 library(dplyr) #for manipulating, aggregating, piping
 
+# read in data
 dogTravel <- read.csv('dogTravel.csv',
                       stringsAsFactors = TRUE)
 allDogDescriptions <- read.csv('allDogDescriptions.csv',
                                stringsAsFactors = TRUE)
 movesByLocation <- read.csv('movesByLocation.csv',
                             stringsAsFactors = TRUE)
+# check if the data was read in accurately 
 str(dogTravel)
 str(allDogDescriptions)
 str(movesByLocation)

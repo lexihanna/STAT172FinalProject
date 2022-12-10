@@ -121,6 +121,7 @@ str(df$env_cats)
 #let's look at what we've changed
 str(df[cols])
 summary(df[cols])
+
 # let's assign dummy variables to breed_primary
 # we want to look at the top 10 breeds and assign the other breeds as "other"
 sort(table(df$breed_primary), decreasing = TRUE)[1:10]
@@ -130,8 +131,10 @@ df$breed_primary <- as.character(df$breed_primary)
 df$breed_primary[df$breed_primary %notin% c("Labrador Retriever", "Chihuahua", "Pit Bull Terrier",
                                             "German Shepherd Dog", "Mixed Breed", "Hound", "Shepherd",
                                             "Terrier", "Beagle", "Boxer")] <- "Other"
-df$breed_primary <- as.factor(df$breed_primary)
+# check if it worked 
 table(df$breed_primary)
+# convert back to a factor 
+df$breed_primary <- as.factor(df$breed_primary)
 
 #let's look at color_primary
 summary(df$color_primary)

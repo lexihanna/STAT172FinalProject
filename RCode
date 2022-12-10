@@ -139,7 +139,7 @@ df$breed_primary <- as.factor(df$breed_primary)
 #let's look at color_primary
 summary(df$color_primary)
 # let's assign dummy variables to color_primary
-# we want to look at the breeds in order and combine the smallest categories
+# we want to look at the color_primary categories distribution to combine the smallest categories
 sort(table(df$color_primary), decreasing = TRUE)
 # changing breed_primary from a factor to character so we can modify it
 df$color_primary <- as.character(df$color_primary)

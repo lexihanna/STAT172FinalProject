@@ -254,11 +254,12 @@ dist
 
 #look at our Y variable, still_there
 ggplot(data = df)+
-  geom_bar(aes(x = still_there)) +
+  geom_bar(aes(x = still_there, fill = still_there)) +
   coord_flip() +
   labs(x = "Adopted", y = "Proportion") +
   ggtitle("Which dogs have/haven't been adopted?") +
-  scale_fill_grey("Adopted")
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_brewer("Adopted",palette ="Paired")
 
 # look at breed_primary and still_there
 ggplot(data = df)+
@@ -266,6 +267,7 @@ ggplot(data = df)+
   coord_flip() +
   labs(x = "Primary breed", y = "Adopted") +
   ggtitle("Which primary breeds have/haven't been adopted?") +
+  theme(plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer("Adopted",palette ="Paired")
 
 # look at color_primary and still_there
@@ -274,6 +276,7 @@ ggplot(data = df)+
   coord_flip() +
   labs(x = "Primary color", y = "Adopted?") +
   ggtitle("Which color dogs have/haven't been adopted?") +
+  theme(plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer("Adopted",palette ="Paired")
 
 # look at age and still_there  
@@ -282,8 +285,8 @@ ggplot(data = df)+
   coord_flip() +
   labs(x = "Age", y = "Adopted") +
   ggtitle("Which age of dogs have/haven't been adopted?") +
-  scale_fill_brewer("ADopted",palette ="Paired")
-
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_brewer("Adopted",palette ="Paired")
 
 # look at size and still_there
 ggplot(data = df)+
@@ -291,6 +294,7 @@ ggplot(data = df)+
   coord_flip() +
   labs(x = "Size", y = "Adopted") +
   ggtitle("Which size of dogs have/haven't been adopted?") +
+  theme(plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer("Adopted",palette ="Paired")  
 
 # look at house_trained and still_there
@@ -299,6 +303,7 @@ ggplot(data = df)+
   coord_flip() +
   labs(x = "House trained", y = "Adopted") +
   ggtitle("House trained dogs that have/haven't been adopted?") +
+  theme(plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer("House Trained",palette ="Paired")  
 
 # predictive model--------------

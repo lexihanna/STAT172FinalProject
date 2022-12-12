@@ -252,60 +252,59 @@ dist
 
 # visualizations---------------
 
-#look at our Y variable, still_there
 ggplot(data = df)+
   geom_bar(aes(x = still_there, fill = still_there)) +
   coord_flip() +
-  labs(x = "Adopted", y = "Proportion") +
-  ggtitle("Which dogs have/haven't been adopted?") +
+  labs(x = "Still There?", y = "Proportion") +
+  ggtitle("Which dogs are still at the shelter?") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_brewer("Adopted",palette ="Paired")
+  scale_fill_brewer("Still There?",palette ="Paired")
 
 # look at breed_primary and still_there
 ggplot(data = df)+
   geom_bar(aes(x = breed_primary, fill = still_there), position = "fill") +
-  coord_flip() +
-  labs(x = "Primary breed", y = "Adopted") +
-  ggtitle("Which primary breeds have/haven't been adopted?") +
+  coord_flip() + 
+  labs(x = "Primary breed", y = "Still There?") +
+  ggtitle("Which primary breeds are still at the shelter?") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_brewer("Adopted",palette ="Paired")
+  scale_fill_brewer("Still There?",palette ="Paired")
 
 # look at color_primary and still_there
 ggplot(data = df)+
   geom_bar(aes(x = color_primary, fill = still_there), position = "fill") +
   coord_flip() +
-  labs(x = "Primary color", y = "Adopted?") +
-  ggtitle("Which color dogs have/haven't been adopted?") +
+  labs(x = "Primary color", y = "Still There?") +
+  ggtitle("Which color dogs are still at the shelter?") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_brewer("Adopted",palette ="Paired")
+  scale_fill_brewer("Adopted",palette ="Still There?")
 
 # look at age and still_there  
 ggplot(data = df)+
   geom_bar(aes(x = age, fill = still_there), position = "fill") +
   coord_flip() +
   labs(x = "Age", y = "Adopted") +
-  ggtitle("Which age of dogs have/haven't been adopted?") +
+  ggtitle("Which age of dogs are still at the shelter?") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_brewer("Adopted",palette ="Paired")
+  scale_fill_brewer("Still There?",palette ="Paired")
 
 # look at size and still_there
 ggplot(data = df)+
   geom_bar(aes(x = size, fill = still_there), position = "fill") +
   coord_flip() +
-  labs(x = "Size", y = "Adopted") +
-  ggtitle("Which size of dogs have/haven't been adopted?") +
+  labs(x = "Size", y = "Still There?") +
+  ggtitle("Which size of dogs are still at the shelter?") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_brewer("Adopted",palette ="Paired")  
+  scale_fill_brewer("Still There?",palette ="Paired")  
 
 # look at house_trained and still_there
 ggplot(data = df)+
   geom_bar(aes(x = house_trained, fill = still_there), position = "fill") +
   coord_flip() +
-  labs(x = "House trained", y = "Adopted") +
-  ggtitle("House trained dogs that have/haven't been adopted?") +
+  labs(x = "House trained", y = "Still There?") +
+  ggtitle("House trained dogs that are still at the shelter?") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_brewer("House Trained",palette ="Paired")  
-
+  scale_fill_brewer("Still There?",palette ="Paired")  
+  
 # predictive model--------------
 library(pROC)
 

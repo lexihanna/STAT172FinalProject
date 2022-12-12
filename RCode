@@ -14,15 +14,13 @@ dogTravel <- read.csv('dogTravel.csv',
                       stringsAsFactors = TRUE)
 allDogDescriptions <- read.csv('allDogDescriptions.csv',
                                stringsAsFactors = TRUE)
-movesByLocation <- read.csv('movesByLocation.csv',
-                            stringsAsFactors = TRUE)
+
 # removes duplicate rows 
 dogTravel <- dogTravel[!duplicated(dogTravel$id), ] 
 allDogDescriptions <- allDogDescriptions[!duplicated(allDogDescriptions$id), ] 
 # check if the data was read in accurately 
 str(dogTravel)
 str(allDogDescriptions)
-str(movesByLocation)
 
 # clean data-----------------
 ## merge dogTravel and allDogDescriptions datasets

@@ -254,20 +254,18 @@ dist
 
 #look at our Y variable, still_there
 ggplot(data = df)+
-  geom_bar(aes(x = still_there, fill = still_there)) +
+  geom_bar(aes(x = still_there)) +
   coord_flip() +
   labs(x = "Adopted", y = "Proportion") +
   ggtitle("Which dogs have/haven't been adopted?") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_brewer("Adopted",palette ="Paired")
+  scale_fill_grey("Adopted")
 
 # look at breed_primary and still_there
 ggplot(data = df)+
   geom_bar(aes(x = breed_primary, fill = still_there), position = "fill") +
-  coord_flip() + 
+  coord_flip() +
   labs(x = "Primary breed", y = "Adopted") +
   ggtitle("Which primary breeds have/haven't been adopted?") +
-  theme(plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer("Adopted",palette ="Paired")
 
 # look at color_primary and still_there
@@ -276,7 +274,6 @@ ggplot(data = df)+
   coord_flip() +
   labs(x = "Primary color", y = "Adopted?") +
   ggtitle("Which color dogs have/haven't been adopted?") +
-  theme(plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer("Adopted",palette ="Paired")
 
 # look at age and still_there  
@@ -285,8 +282,8 @@ ggplot(data = df)+
   coord_flip() +
   labs(x = "Age", y = "Adopted") +
   ggtitle("Which age of dogs have/haven't been adopted?") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_brewer("Adopted",palette ="Paired")
+  scale_fill_brewer("ADopted",palette ="Paired")
+
 
 # look at size and still_there
 ggplot(data = df)+
@@ -294,7 +291,6 @@ ggplot(data = df)+
   coord_flip() +
   labs(x = "Size", y = "Adopted") +
   ggtitle("Which size of dogs have/haven't been adopted?") +
-  theme(plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer("Adopted",palette ="Paired")  
 
 # look at house_trained and still_there
@@ -303,10 +299,11 @@ ggplot(data = df)+
   coord_flip() +
   labs(x = "House trained", y = "Adopted") +
   ggtitle("House trained dogs that have/haven't been adopted?") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_brewer("Adopted",palette ="Paired") 
-    
+  scale_fill_brewer("House Trained",palette ="Paired")  
+
 # predictive model--------------
+library(pROC)
+
 # creating a binary version of still_there to use in Bernoulli and Random Forests
 table(df$still_there)
 df <- df %>% 
@@ -320,13 +317,13 @@ str(df[cols])
 df$still_there_bin <- as.factor(df$still_there_bin)
 # creating a variable selection forest to create a bernoulli model
 bern_var_selection <- randomForest(still_there_bin~ breed_primary + breed_mixed + 
-                                    color_primary + sex + age + size + coat + fixed + 
-                                    special_needs + shots_current + env_children + env_dogs + 
-                                    env_cats + house_trained,
-                                  data= df, # all of the data
-                                  ntree = 1000, #B = # of classification trees in forest
-                                  mtry = 4, # choose m = sqrt(14) = 3.74 approx
-                                  importance = TRUE)
+                                     color_primary + sex + age + size + coat + fixed + 
+                                     special_needs + shots_current + env_children + env_dogs + 
+                                     env_cats + house_trained,
+                                   data= df, # all of the data
+                                   ntree = 1000, #B = # of classification trees in forest
+                                   mtry = 4, # choose m = sqrt(14) = 3.74 approx
+                                   importance = TRUE)
 # variable importance plot!
 vi <- as.data.frame(varImpPlot(bern_var_selection, type = 1))
 # prettier plot! 
@@ -351,29 +348,29 @@ test.df <- df[-train.idx, ]
 m1 <- glm(still_there ~ color_primary + breed_primary + coat, 
           data = train.df,
           family = binomial(link = "logit"))
-AIC(m1) # 1705.233
-BIC(m1) # 1877.344
-# ROUND 2: color_primary + breed_primary + coat + env_children + house_trained
-m2 <- glm(still_there ~ color_primary + breed_primary + coat + env_children + house_trained, 
+AIC(m1) # 1280.177
+BIC(m1) # 1441.247
+# ROUND 2: color_primary + breed_primary + coat + shots_current + env_children
+m2 <- glm(still_there ~ color_primary + breed_primary + coat + shots_current + env_children, 
           data = train.df,
           family = binomial(link = "logit"))
-AIC(m2) # 1677.779 better, let's keep going!
-BIC(m2) # 1862.639 better, let's keep going!
-# ROUND 3: color_primary + breed_primary + coat + env_children + house_trained + size
-m3 <- glm(still_there ~ color_primary + breed_primary + coat + env_children + house_trained + 
+AIC(m2) # 1273.269 better, let's keep going!
+BIC(m2) # 1446.27 worse, but AIC improved. Let's try another round and see if we can improve!
+# ROUND 3: color_primary + breed_primary + coat + shots_current + env_children + size
+m3 <- glm(still_there ~ color_primary + breed_primary + coat + shots_current + env_children + 
             size, 
           data = train.df,
           family = binomial(link = "logit"))
-AIC(m3) # 1677.755 better, but barely
-BIC(m3) # 1881.738 worse, let's stop at the previous model.
-# final bernoulli model without any additions:
-final_bern_model <- glm(still_there ~ color_primary + breed_primary + coat + env_children + 
-                          house_trained, 
-                          data = train.df,
-                          family = binomial(link = "logit"))
+AIC(m3) # 1274.785 worse
+BIC(m3) # 1465.682 worse, let's stop at the previous model.
+# final Bernoulli model without any additions:
+final_bern_model <- glm(still_there ~ color_primary + breed_primary + coat + shots_current + 
+                          size, 
+                        data = train.df,
+                        family = binomial(link = "logit"))
 summary(final_bern_model)
-# AIC: 1677.779
-# BIC: 1862.639
+# AIC: 1273.269
+# BIC: 1446.27
 
 # let's fine tune pi*
 pi_hat <- predict(final_bern_model, test.df, type = "response")
@@ -381,10 +378,10 @@ rocCurve <- roc(response = test.df$still_there_bin,
                 predictor = pi_hat,
                 levels = c("0", "1"))
 plot(rocCurve, print.thres = TRUE, print.auc = TRUE)
-# PI STAR: 0.054
-# SENSITIVITY: 0.703
-# SPECIFICITY: 0.703
-# AUC: 0.754
+# PI STAR: 0.063
+# SENSITIVITY: 0.678
+# SPECIFICITY: 0.547
+# AUC: 0.648
 pi_star <- coords(rocCurve, "best", ret = "threshold")$threshold[1]
 test.df$bern_pred <- as.factor(ifelse(pi_hat > pi_star, "1", "0"))
 pi_star
@@ -422,14 +419,14 @@ ggplot(data = keeps) +
   scale_x_continuous(breaks = c(1:14)) + 
   ggtitle("Random Forest: Fine Tuning m") +
   theme(plot.title = element_text(hjust = 0.5))
-# the best oob error rate is when m = 4, so let's use it!
+# the best oob error rate is when m = 3, so let's use it!
 finalforest <- randomForest(still_there_bin ~ breed_primary + breed_mixed + 
-                             color_primary + sex + age + size + coat + fixed + 
-                             special_needs + shots_current + env_children + env_dogs + 
-                             env_cats + house_trained,
-                           data = train.df,
-                           ntree = 1000,
-                           mtry = 4)
+                              color_primary + sex + age + size + coat + fixed + 
+                              special_needs + shots_current + env_children + env_dogs + 
+                              env_cats + house_trained,
+                            data = train.df,
+                            ntree = 1000,
+                            mtry = 3)
 
 # let's tune pi*!
 pi_hat <- predict(finalforest, test.df, type = "prob")[, "1"] # extract prob of positive event, 
@@ -437,10 +434,10 @@ rocCurve <- roc(response = test.df$still_there_bin,
                 predictor = pi_hat,
                 levels = c("0", "1"))
 plot(rocCurve, print.thres = TRUE, print.auc = TRUE)
-# PI STAR: 0.10
-# SENSITIVITY: 0.920
-# SPECIFICITY: 0.535
-# AUC: 0.754
+# PI STAR: 0.046
+# SENSITIVITY: 0.766
+# SPECIFICITY: 0.667
+# AUC: 0.731
 pi_star <- coords(rocCurve, "best", ret = "threshold")$threshold[1]
 test.df$forest_pred <- as.factor(ifelse(pi_hat > pi_star, "1", "0"))
 pi_star
@@ -462,7 +459,6 @@ library(tidytext) #for (tidy) text mining
 library(topicmodels) #for LDA (topic modeling)
 library(reshape2) #for reshaping data (long to wide or wide to long)
 library(randomForest)
-library(pROC)
 
 # I'm creating a new, tokenized data frame that is called "tokens"
 tokens <- df %>% unnest_tokens(word, description)
@@ -562,50 +558,83 @@ summary(train1.df$still_there_bin)
 train1.df$still_there_bin <- train1.df$still_there_bin - 1
 # checking to see if it worked
 summary(train1.df$still_there_bin)
-# ROUND 1: color_primary + breed_primary + coat + Topic19
-m1 <- glm(still_there_bin ~ color_primary + breed_primary + coat + Topic19, 
+# ROUND 1: Topic5 + Topic4 + breed_primary
+m1 <- glm(still_there_bin ~ Topic5 + Topic4 + breed_primary, 
           data = train1.df,
           family = binomial(link = "logit"))
-AIC(m1) # 1555.442
-BIC(m1) # 1733.928
-# ROUND 2: color_primary + breed_primary + coat + Topic19 + Topic7 + house_trained
-m2 <- glm(still_there_bin ~ color_primary + breed_primary + coat + Topic19 + Topic7 + 
-            house_trained, 
+AIC(m1) # 1015.492
+BIC(m1) # 1093.044
+# ROUND 2: Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14
+m2 <- glm(still_there_bin ~ Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14, 
           data = train1.df,
           family = binomial(link = "logit"))
-AIC(m2) # 1485.237 better! keep going
-BIC(m2) # 1676.471 better! keep going
-# ROUND 3: color_primary + breed_primary + coat + Topic19 + Topic7 + house_trained + Topic18 +
-# Topic15 + Topic14
-m3 <- glm(still_there_bin ~ color_primary + breed_primary + coat + Topic19 + Topic7 + 
-            house_trained + Topic18 + Topic15 + Topic14, 
+AIC(m2) # 973.7812 better! keep going
+BIC(m2) # 1152.748 worse, but AIC improved. Let's keep going to see if we can improve more!
+# ROUND 3: Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 +
+# Topic3 + Topic16
+m3 <- glm(still_there_bin ~ Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 + 
+            Topic3 + Topic16, 
           data = train1.df,
           family = binomial(link = "logit"))
-AIC(m3) # 1416.095 better! keep going
-BIC(m3) # 1626.453 better! keep going
-# ROUND 4: color_primary + breed_primary + coat + Topic19 + Topic7 + house_trained + Topic18 +
-# Topic15 + Topic14 + Topic16 + Topic2
-m4 <- glm(still_there_bin ~ color_primary + breed_primary + coat + Topic19 + Topic7 + 
-            house_trained + Topic18 + Topic15 + Topic14 + Topic16 + Topic2, 
+AIC(m3) # 963.9356 better! keep going
+BIC(m3) # 1154.833 worse, but AIC improved. Let's keep going to see if we can improve more!
+# ROUND 4: Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 +
+# Topic3 + Topic16 + Topic10 + Topic2
+m4 <- glm(still_there_bin ~ Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 + 
+            Topic3 + Topic16 + Topic10 + Topic2, 
           data = train1.df,
           family = binomial(link = "logit"))
-AIC(m4) # 1403.492 better! keep going
-BIC(m4) # 1626.493 worse, but AIC got better. Let's keep going and see if we can improve further.
-# ROUND 5: color_primary + breed_primary + coat + Topic19 + Topic7 + house_trained + Topic18 +
-# Topic15 + Topic14 + Topic16 + Topic2 + Topic8
-m5 <- glm(still_there_bin ~ color_primary + breed_primary + coat + Topic19 + Topic7 + 
-            house_trained + Topic18 + Topic15 + Topic14 + Topic16 + Topic2 + Topic8, 
+AIC(m4) # 937.3602 better! keep going
+BIC(m4) # 1140.189 better! keep going
+# ROUND 5: Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 +
+# Topic3 + Topic16 + Topic10 + Topic2 + Topic15 + Topic8
+m5 <- glm(still_there_bin ~ Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 +
+            Topic3 + Topic16 + Topic10 + Topic2 + Topic15 + Topic8, 
           data = train1.df,
           family = binomial(link = "logit"))
-AIC(m5) # 1405.492 worse, stop!
-BIC(m5) # 1634.974 worse, stop!
+AIC(m5) # 907.5921 better! keep going
+BIC(m5) # 1122.352 better! keep going
+
+# ROUND 6: Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 +
+# Topic3 + Topic16 + Topic10 + Topic2 + Topic15 + Topic8 + Topic18 + Topic19
+m6 <- glm(still_there_bin ~ Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 +
+            Topic3 + Topic16 + Topic10 + Topic2 + Topic15 + Topic8 + Topic18 + Topic19, 
+          data = train1.df,
+          family = binomial(link = "logit"))
+AIC(m6) # 904.8132 better! keep going
+BIC(m6) # 1131.504 worse, but AIC improved. let's go again and see if we can improve!
+
+# ROUND 7: Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 +
+# Topic3 + Topic16 + Topic10 + Topic2 + Topic15 + Topic8 + Topic18 + Topic19 +
+# house_trained + Topic13
+m7 <- glm(still_there_bin ~ Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 +
+            Topic3 + Topic16 + Topic10 + Topic2 + Topic15 + Topic8 + Topic18 + Topic19 +
+            house_trained + Topic13, 
+          data = train1.df,
+          family = binomial(link = "logit"))
+AIC(m7) # 879.678 better! keep going
+BIC(m7) # 1118.3 better! keep going
+
+# ROUND 8: Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 +
+# Topic3 + Topic16 + Topic10 + Topic2 + Topic15 + Topic8 + Topic18 + Topic19 +
+# house_trained + Topic13 + Topic11 + Topic1
+m8 <- glm(still_there_bin ~ Topic5 + Topic4 + breed_primary + coat + color_primary + Topic14 +
+            Topic3 + Topic16 + Topic10 + Topic2 + Topic15 + Topic8 + Topic18 + Topic19 +
+            house_trained + Topic13 + Topic11 + Topic1, 
+          data = train1.df,
+          family = binomial(link = "logit"))
+AIC(m8) # 882.0293 worse! stop
+BIC(m8) # 1132.582 worse! stop
 
 # Final LDA model with Random Forest Variable Selection:
-final_lda_model <- glm(still_there_bin ~ color_primary + breed_primary + coat + Topic19 + Topic7 + 
-                         house_trained + Topic18 + Topic15 + Topic14 + Topic16 + Topic2, 
+final_lda_model <- glm(still_there_bin ~ Topic5 + Topic4 + breed_primary + coat + color_primary + 
+                         Topic14 + Topic3 + Topic16 + Topic10 + Topic2 + Topic15 + Topic8 + Topic18 + 
+                         Topic19 + house_trained + Topic13, 
                        data = train1.df,
                        family = binomial(link = "logit"))
 summary(final_lda_model)
+# AIC: 879.678
+# BIC: 1118.3
 
 # let's fine tune pi*
 pi_hat <- predict(final_lda_model, test1.df, type = "response")
@@ -613,10 +642,10 @@ rocCurve <- roc(response = test1.df$still_there_bin,
                 predictor = pi_hat,
                 levels = c("0", "1"))
 plot(rocCurve, print.thres = TRUE, print.auc = TRUE)
-# PI STAR: 0.038
-# SENSITIVITY: 0.708
-# SPECIFICITY: 0.812
-# AUC: 0.819
+# PI STAR: 0.022
+# SENSITIVITY: 0.604
+# SPECIFICITY: 0.909
+# AUC: 0.822
 pi_star <- coords(rocCurve, "best", ret = "threshold")$threshold[1]
 test1.df$lda_pred <- as.factor(ifelse(pi_hat > pi_star, "1", "0"))
 pi_star

@@ -307,7 +307,7 @@ table(df$still_there)
 df <- df %>% 
   mutate(still_there_bin = ifelse(still_there == "True", 1, 0))
 # checking to see if it worked
-summary(df$still_there_bin)
+table(df$still_there_bin)
 str(df[cols])
 
 

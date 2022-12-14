@@ -457,7 +457,7 @@ autoplot(cm, type = "heatmap") +
 library(tidytext) #for (tidy) text mining
 library(topicmodels) #for LDA (topic modeling)
 library(reshape2) #for reshaping data (long to wide or wide to long)
-library(randomForest)
+
 
 # I'm creating a new, tokenized data frame that is called "tokens"
 tokens <- df %>% unnest_tokens(word, description)

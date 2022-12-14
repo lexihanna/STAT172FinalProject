@@ -8,6 +8,7 @@ library(yardstick)
 library(ggplot2) #for graphing
 library(RColorBrewer) #for custom color palettes
 library(dplyr) #for manipulating, aggregating, piping
+library(pROC)
 
 # read in data
 dogTravel <- read.csv('dogTravel.csv',

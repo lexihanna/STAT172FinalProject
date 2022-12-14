@@ -166,14 +166,12 @@ df$sex <- as.factor(df$sex)
 # let's see our final dataset
 summary(df[cols])
 
-# complete separation---------------
-## Response Variable 
+# Response Variable 
 table(df$still_there)
 # So, around 95% of the dogs from these data were adopted (False, 0) and 5%
 # of them were not adopted (True, 1).
-## Exploratory Variable
-### Categorical Variables (checking for complete separation)
 
+# Categorical Variables (checking for complete separation)
 #### distribution table for the breed_primary variable and still_there
 freq <- prop.table(table(df$still_there, df$breed_primary),2)*100
 freq

@@ -248,7 +248,6 @@ dist
 
 
 # visualizations---------------
-
 ggplot(data = df)+
   geom_bar(aes(x = still_there, fill = still_there)) +
   coord_flip() +
@@ -303,8 +302,6 @@ ggplot(data = df)+
   scale_fill_brewer("Still There?",palette ="Paired")  
   
 # predictive model--------------
-library(pROC)
-
 # creating a binary version of still_there to use in Bernoulli and Random Forests
 table(df$still_there)
 df <- df %>% 

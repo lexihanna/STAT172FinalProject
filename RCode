@@ -274,7 +274,7 @@ ggplot(data = df)+
   labs(x = "Primary color", y = "Still There?") +
   ggtitle("Which color dogs are still at the shelter?") +
   theme(plot.title = element_text(hjust = 0.5)) +
-  scale_fill_brewer("Adopted",palette ="Still There?")
+  scale_fill_brewer("Still There?",palette ="Still There?")
 
 # look at age and still_there  
 ggplot(data = df)+

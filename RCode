@@ -280,7 +280,7 @@ ggplot(data = df)+
 ggplot(data = df)+
   geom_bar(aes(x = age, fill = still_there), position = "fill") +
   coord_flip() +
-  labs(x = "Age", y = "Adopted") +
+  labs(x = "Age", y = "Still There?") +
   ggtitle("Which age of dogs are still at the shelter?") +
   theme(plot.title = element_text(hjust = 0.5)) +
   scale_fill_brewer("Still There?",palette ="Paired")
